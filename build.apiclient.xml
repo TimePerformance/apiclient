@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TimePerformance API Client" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+	<import file="../common/ant/build-java.xml" />
+
+</project>
