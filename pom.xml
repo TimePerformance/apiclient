@@ -42,4 +42,10 @@
 			<version>2.4.2</version>
 		</dependency>
 	</dependencies>
+	<scm>
+		<url>https://github.com/TimePerformance/apiclient.git</url>
+		<connection>scm:git:git@github.com:TimePerformance/apiclient.git</connection>
+		<developerConnection>scm:git:git@github.com:TimePerformance/apiclient.git</developerConnection>
+		<tag>scm:git:git@github.com:TimePerformance/apiclient.git</tag>
+	</scm>
 </project>
