@@ -44,8 +44,8 @@
 	</dependencies>
 	<scm>
 		<url>git@github.com:TimePerformance/apiclient.git</url>
-		<connection>scm:git:ssh://git@github.com:TimePerformance/apiclient.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com:TimePerformance/apiclient.git</developerConnection>
+		<connection>scm:git:git@github.com:TimePerformance/apiclient.git</connection>
+		<developerConnection>scm:git:git@github.com:TimePerformance/apiclient.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 </project>
