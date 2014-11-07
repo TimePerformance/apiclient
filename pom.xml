@@ -46,6 +46,6 @@
 		<url>https://github.com/TimePerformance/apiclient.git</url>
 		<connection>scm:git:ssh://git@github.com:TimePerformance/apiclient.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com:TimePerformance/apiclient.git</developerConnection>
-		<tag>scm:git:ssh://git@github.com:TimePerformance/apiclient.git</tag>
+		<tag>HEAD</tag>
 	</scm>
 </project>
