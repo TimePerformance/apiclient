@@ -113,7 +113,7 @@ public class APIClient {
      * @param lastDay (format yyyy-MM-dd)
      * @param hoursPerDay
      * @param halfDayThreshold
-     * @return the
+     * @return user's time report
      * @throws Exception
      */
     public APIResponse getTimeReport(String userLogin,
@@ -123,14 +123,40 @@ public class APIClient {
                                      Double halfDayThreshold) throws Exception {
         String id = getUserIdFromLogin(userLogin);
         String url = "users/" + id + "/timeReport.json";
-        url += "?firstDay=" + firstDay + "&lastDay=" + lastDay;
+        url += "?" + buildTimeReportParameter(firstDay, lastDay, hoursPerDay, halfDayThreshold);
+        return get(url);
+    }
+    
+    /**
+     * 
+     * @param userLogin
+     * @param firstDay (format yyyy-MM-dd)
+     * @param lastDay (format yyyy-MM-dd)
+     * @param hoursPerDay
+     * @param halfDayThreshold
+     * @return user's detailed timesheet
+     * @throws Exception
+     */
+    public APIResponse getTimesheet(String userLogin,
+                                    String firstDay,
+                                    String lastDay,
+                                    Double hoursPerDay,
+                                    Double halfDayThreshold) throws Exception {
+        String id = getUserIdFromLogin(userLogin);
+        String url = "users/" + id + "/timesheet.json";
+        url += "?" + buildTimeReportParameter(firstDay, lastDay, hoursPerDay, halfDayThreshold);
+        return get(url);
+    }
+    
+    public String buildTimeReportParameter(String firstDay, String lastDay, Double hoursPerDay, Double halfDayThreshold) {
+        String ret = "firstDay=" + firstDay + "&lastDay=" + lastDay;
         if (hoursPerDay != null) {
-            url += "&hoursPerDay=" + hoursPerDay;
+            ret += "&hoursPerDay=" + hoursPerDay;
             if (halfDayThreshold != null) {
-                url += "&halfDayThreshold=" + halfDayThreshold;
+                ret += "&halfDayThreshold=" + halfDayThreshold;
             }
         }
-        return get(url);
+        return ret;
     }
     
     public String getUserIdFromLogin(String userLogin) throws Exception {
