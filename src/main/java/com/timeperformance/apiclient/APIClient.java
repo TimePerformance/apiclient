@@ -69,7 +69,7 @@ public class APIClient {
         String id = getProjectId(projectName);
         String path = "projects/" + id + "/progressReport.json";
         if (formatNumber) path += "?formatting=1";
-        return get(path, false);
+        return doRequest(path, false);
     }
     
     /**
@@ -80,7 +80,7 @@ public class APIClient {
      * @throws Exception
      */
     public String getProjectId(String projectName) throws Exception, APIException {
-        String id = get("projects/getIdFromName.txt?name=" + projectName, false).content;
+        String id = doRequest("projects/getIdFromName.txt?name=" + projectName, false).content;
         if (id.length() == 0) throw new Exception("project not found: " + projectName);
         LOGGER.log(Level.FINE, projectName + " project id = " + id);
         return id;
@@ -89,11 +89,12 @@ public class APIClient {
     /**
      * @return list of not archived projects that one have access in JSON
      */
-    public APIResponse listProjects() throws Exception {
-        return get("projects.json");
+    public APIResponse getProjectList() throws Exception {
+        return doRequest("projects.json");
     }
     
     /**
+     * <a href="http://pma.timeperformance.com/apidoc#users_assignment">Online Documentation</a>
      * 
      * @param userLogin
      * @param durationInMonths indicates how long in past and in future for the schedule (default 12
@@ -101,9 +102,9 @@ public class APIClient {
      * @return schedule in iCal format
      * @throws Exception
      */
-    public APIResponse getSchedule(String userLogin, int durationInMonths) throws Exception {
+    public APIResponse getUserSchedule(String userLogin, int durationInMonths) throws Exception {
         String id = getUserIdFromLogin(userLogin);
-        return get("users/" + id + "/schedule.ics?month=" + durationInMonths);
+        return doRequest("users/" + id + "/schedule.ics?month=" + durationInMonths);
     }
     
     /**
@@ -116,18 +117,21 @@ public class APIClient {
      * @return user's time report
      * @throws Exception
      */
-    public APIResponse getTimeReport(String userLogin,
-                                     String firstDay,
-                                     String lastDay,
-                                     Double hoursPerDay,
-                                     Double halfDayThreshold) throws Exception {
+    public APIResponse getUserTimeReport(String userLogin,
+                                         String firstDay,
+                                         String lastDay,
+                                         Double hoursPerDay,
+                                         Double halfDayThreshold) throws Exception {
         String id = getUserIdFromLogin(userLogin);
         String url = "users/" + id + "/timeReport.json";
-        url += "?" + buildTimeReportParameter(firstDay, lastDay, hoursPerDay, halfDayThreshold);
-        return get(url);
+        
+        url = addTimeReportParameters(url, firstDay, lastDay, hoursPerDay, halfDayThreshold);
+        
+        return doRequest(url);
     }
     
     /**
+     * <a href="http://pma.timeperformance.com/apidoc#users_timesheet">Online Documentation</a>
      * 
      * @param userLogin
      * @param firstDay (format yyyy-MM-dd)
@@ -137,31 +141,122 @@ public class APIClient {
      * @return user's detailed timesheet
      * @throws Exception
      */
-    public APIResponse getTimesheet(String userLogin,
-                                    String firstDay,
-                                    String lastDay,
-                                    Double hoursPerDay,
-                                    Double halfDayThreshold) throws Exception {
+    public APIResponse getUserTimesheet(String userLogin,
+                                        String firstDay,
+                                        String lastDay,
+                                        Double hoursPerDay,
+                                        Double halfDayThreshold) throws Exception {
         String id = getUserIdFromLogin(userLogin);
         String url = "users/" + id + "/timesheet.json";
-        url += "?" + buildTimeReportParameter(firstDay, lastDay, hoursPerDay, halfDayThreshold);
-        return get(url);
+        
+        url = addTimeReportParameters(url, firstDay, lastDay, hoursPerDay, halfDayThreshold);
+        
+        return doRequest(url);
     }
     
-    public String buildTimeReportParameter(String firstDay, String lastDay, Double hoursPerDay, Double halfDayThreshold) {
-        String ret = "firstDay=" + firstDay + "&lastDay=" + lastDay;
-        if (hoursPerDay != null) {
-            ret += "&hoursPerDay=" + hoursPerDay;
-            if (halfDayThreshold != null) {
-                ret += "&halfDayThreshold=" + halfDayThreshold;
-            }
+    static String addTimeReportParameters(String baseURL,
+                                          String firstDay,
+                                          String lastDay,
+                                          Double hoursPerDay,
+                                          Double halfDayThreshold) {
+        StringBuffer url = new StringBuffer(baseURL);
+        
+        addQueryParam(url, "firstDay", firstDay);
+        addQueryParam(url, "lastDay", lastDay);
+        addQueryParam(url, "hoursPerDay", hoursPerDay);
+        addQueryParam(url, "halfDayThreshold", halfDayThreshold);
+        
+        return url.toString();
+    }
+    
+    /**
+     * <a href="http://pma.timeperformance.com/apidoc#users_todolist">Online Documentation</a>
+     * 
+     * @param userLogin
+     * @param projectName (optionnal filter)
+     * @return
+     * @throws Exception
+     */
+    public APIResponse getUserTodoList(String userLogin, String projectName) throws Exception {
+        String id = getUserIdFromLogin(userLogin);
+        
+        StringBuffer url = new StringBuffer("users/" + id + "/todolist.json");
+        
+        if (projectName != null) addQueryParam(url, "project", getProjectId(projectName));
+        
+        return doRequest(url.toString());
+    }
+    
+    /**
+     * <a href="http://pma.timeperformance.com/apidoc#users_tasks">Online Documentation</a>
+     * 
+     * @param userLogin
+     * @param periodStart
+     * @param periodEnd
+     * @param notClosed
+     * @return
+     * @throws Exception
+     */
+    public APIResponse getUserTasks(String userLogin, String periodStart, String periodEnd, boolean notClosed)
+            throws Exception {
+        String id = getUserIdFromLogin(userLogin);
+        
+        StringBuffer url = new StringBuffer("users/" + id + "/todolist.json");
+        
+        addQueryParam(url, "periodStart", periodStart);
+        addQueryParam(url, "periodEnd", periodEnd);
+        addQueryParam(url, "notClosed", notClosed ? 1 : null);
+        
+        return doRequest(url.toString());
+    }
+    
+    /**
+     * Utility: appends a parameter to the URL
+     * 
+     * @param url
+     * @param paramName
+     * @param paramValue
+     */
+    static void addQueryParam(StringBuffer url, String paramName, Object paramValue) {
+        if (paramValue == null) return;
+        
+        try {
+            url.append(url.indexOf("?") > 0 ? "&" : "?");
+            url.append(URLEncoder.encode(paramName, "UTF-8"));
+            url.append("=");
+            url.append(URLEncoder.encode(paramValue.toString(), "UTF-8"));
         }
-        return ret;
+        catch (UnsupportedEncodingException ex) {
+            throw new AssertionError("utf-8 not supported ??", ex);
+        }
+    }
+    
+    /**
+     * <a href="http://pma.timeperformance.com/apidoc#projects_tasks">Online Documentation</a>
+     * 
+     * @param projectName
+     * @param periodStart
+     * @param periodEnd
+     * @param notClosed
+     * @return
+     * @throws Exception
+     */
+    public APIResponse getProjectTasks(String projectName, String periodStart, String periodEnd, boolean notClosed)
+            throws Exception {
+        String id = getProjectId(projectName);
+        
+        StringBuffer url = new StringBuffer("projects/" + id + "/tasks.json");
+        
+        addQueryParam(url, "periodStart", periodStart);
+        addQueryParam(url, "periodEnd", periodEnd);
+        addQueryParam(url, "notClosed", notClosed ? 1 : null);
+        
+        return doRequest(url.toString());
     }
     
     public String getUserIdFromLogin(String userLogin) throws Exception {
         String url = "users/getIdFromLogin.txt?login=" + userLogin;
-        return get(url).content;
+        return doRequest(url).content;
     }
     
     public DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -174,18 +269,12 @@ public class APIClient {
      * @return
      */
     String buildURL(String path, boolean addAuthenticationParameters) {
-        try {
-            String urlString = apiBaseURL + path;
-            if (addAuthenticationParameters) {
-                urlString += path.contains("?") ? "&" : "?";
-                urlString += "apiuser=" + URLEncoder.encode(getAPILogin(), "utf-8");
-                urlString += "&apikey=" + URLEncoder.encode(password, "utf-8");
-            }
-            return urlString;
+        StringBuffer urlString = new StringBuffer(apiBaseURL + path);
+        if (addAuthenticationParameters) {
+            addQueryParam(urlString, "apiuser", getAPILogin());
+            addQueryParam(urlString, "apikey", password);
         }
-        catch (UnsupportedEncodingException ex) {
-            throw new AssertionError("unexpected", ex);
-        }
+        return urlString.toString();
     }
     
     public String getAPILogin() {
@@ -199,8 +288,8 @@ public class APIClient {
      * @return response body content
      * @throws Exception in case something got wrong
      */
-    public APIResponse get(String path) throws Exception {
-        return get(path, false);
+    public APIResponse doRequest(String path) throws Exception {
+        return doRequest(path, false);
     }
     
     /**
@@ -212,7 +301,7 @@ public class APIClient {
      * @return response body content
      * @throws Exception in case something got wrong
      */
-    public APIResponse get(String path, boolean authenticationInPath) throws APIException, IOException {
+    public APIResponse doRequest(String path, boolean authenticationInPath) throws APIException, IOException {
         
         URL url = new URL(buildURL(path, authenticationInPath));
         
