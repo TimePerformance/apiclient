@@ -70,8 +70,6 @@ public class APIClient {
         String path = "projects/" + id + "/progressReport.json";
         if (formatNumber) path += "?formatting=1";
         return doRequest(path, false);
-<<<<<<< HEAD
-=======
     }
     
     /**
@@ -84,7 +82,6 @@ public class APIClient {
         String id = getProjectId(projectName);
         String path = "projects/" + id + "/workloadplan.json";
         return doRequest(path, false);
->>>>>>> internal/master
     }
     
     /**
