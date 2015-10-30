@@ -271,6 +271,10 @@ public class APIClient {
         return doRequest(url).content;
     }
     
+    public APIResponse getUserList() throws Exception {
+        return doRequest("users.json");
+    }
+    
     public DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
     /**
