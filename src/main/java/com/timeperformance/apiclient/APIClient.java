@@ -16,6 +16,8 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class APIClient {
     
+    private static final String API_URL = "/api/v2/";
+    
     private static final Logger LOGGER = Logger.getGlobal();
     
     /**
@@ -46,12 +48,13 @@ public class APIClient {
      * @param password
      */
     public APIClient(String account, String login, String password) {
-        this("https://pma.timeperformance.com/api/v1/", account, login, password);
+        this("https://pma.timeperformance.com" + API_URL, account, login, password);
     }
     
     public APIClient(String apiBaseURL, String account, String login, String password) {
         if (!apiBaseURL.startsWith("https")) throw new IllegalArgumentException("https secure protocol required");
-        if (!apiBaseURL.endsWith("/api/v1/")) throw new IllegalArgumentException("apiBaseURL must end with /api/v1/");
+        if (!apiBaseURL.matches(".*/api/v\\d+/"))
+            throw new IllegalArgumentException("apiBaseURL must end with " + API_URL);
         
         this.apiBaseURL = apiBaseURL;
         this.account = account;
