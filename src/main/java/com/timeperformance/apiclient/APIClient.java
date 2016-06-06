@@ -102,6 +102,18 @@ public class APIClient {
     }
     
     /**
+     * 
+     * @param projectName
+     * @return project full description (summary)
+     * @throws Exception
+     */
+    public APIResponse getProjectSummary(String projectName) throws Exception {
+        String id = getProjectId(projectName);
+        String path = "projects/" + id + "/summary.json";
+        return doRequest(path, false);
+    }
+    
+    /**
      * @return list of not archived projects that one have access in JSON
      */
     public APIResponse getProjectList() throws Exception {
@@ -136,7 +148,8 @@ public class APIClient {
                                          String firstDay,
                                          String lastDay,
                                          Double hoursPerDay,
-                                         Double halfDayThreshold) throws Exception {
+                                         Double halfDayThreshold)
+            throws Exception {
         String id = getUserIdFromLogin(userLogin);
         String url = "users/" + id + "/timeReport.json";
         
@@ -160,7 +173,8 @@ public class APIClient {
                                         String firstDay,
                                         String lastDay,
                                         Double hoursPerDay,
-                                        Double halfDayThreshold) throws Exception {
+                                        Double halfDayThreshold)
+            throws Exception {
         String id = getUserIdFromLogin(userLogin);
         String url = "users/" + id + "/timesheet.json";
         
