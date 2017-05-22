@@ -44,8 +44,8 @@ public class APIClient {
 	 * Default constructor with hardcoded URL of the service
 	 * 
 	 * @param account
-	 * @param login
-	 * @param password
+	 * @param login API login
+	 * @param password API secret key
 	 */
 	public APIClient(String account, String login, String password) {
 		this("https://pma.timeperformance.com" + API_URL, account, login, password);
@@ -53,8 +53,6 @@ public class APIClient {
 	
 	public APIClient(String apiBaseURL, String account, String login, String password) {
 		if (!apiBaseURL.startsWith("https")) throw new IllegalArgumentException("https secure protocol required");
-		if (!apiBaseURL.matches(".*/api/v\\d+/"))
-			throw new IllegalArgumentException("apiBaseURL must end with " + API_URL);
 		
 		this.apiBaseURL = apiBaseURL;
 		this.account = account;
@@ -199,11 +197,11 @@ public class APIClient {
 		return doRequest(url);
 	}
 	
-	static String addTimeReportParameters(String baseURL,
-										  String firstDay,
-										  String lastDay,
-										  Double hoursPerDay,
-										  Double halfDayThreshold) {
+	public static String addTimeReportParameters(String baseURL,
+												 String firstDay,
+												 String lastDay,
+												 Double hoursPerDay,
+												 Double halfDayThreshold) {
 		StringBuffer url = new StringBuffer(baseURL);
 		
 		addQueryParam(url, "firstDay", firstDay);
@@ -262,7 +260,7 @@ public class APIClient {
 	 * @param paramName
 	 * @param paramValue
 	 */
-	static void addQueryParam(StringBuffer url, String paramName, Object paramValue) {
+	public static void addQueryParam(StringBuffer url, String paramName, Object paramValue) {
 		if (paramValue == null) return;
 		
 		try {
@@ -299,6 +297,21 @@ public class APIClient {
 		return doRequest(url.toString());
 	}
 	
+	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#projects_team">Online Documentation</a>
+	 * 
+	 * @param projectName
+	 * @return
+	 * @throws Exception
+	 */
+	public APIResponse getProjectTeam(String projectName) throws Exception {
+		String id = getProjectId(projectName);
+		
+		StringBuffer url = new StringBuffer("projects/" + id + "/team.json");
+		
+		return doRequest(url.toString());
+	}
+	
 	public String getUserIdFromLogin(String userLogin) throws Exception {
 		String url = "users/getIdFromLogin.txt?login=" + userLogin;
 		return doRequest(url).content;
@@ -318,7 +331,7 @@ public class APIClient {
 	 * @return
 	 */
 	String buildURL(String path, boolean addAuthenticationParameters) {
-		StringBuffer urlString = new StringBuffer(apiBaseURL + path);
+		StringBuffer urlString = new StringBuffer(getApiBaseURL() + path);
 		if (addAuthenticationParameters) {
 			addQueryParam(urlString, "apiuser", getAPILogin());
 			addQueryParam(urlString, "apikey", password);
