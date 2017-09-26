@@ -78,6 +78,21 @@ public class APIClient {
 	/**
 	 * 
 	 * @param projectName
+<<<<<<< HEAD
+=======
+	 * @return project baseline history, current plan and forecast
+	 * @throws Exception
+	 */
+	public APIResponse getProjectBaselineReport(String projectName) throws Exception {
+		String id = getProjectId(projectName);
+		StringBuffer path = new StringBuffer("projects/" + id + "/baselineReport.json");
+		return doRequest(path.toString(), false);
+	}
+	
+	/**
+	 * 
+	 * @param projectName
+>>>>>>> internal/master
 	 * @return project roadmap
 	 * @throws Exception
 	 */
