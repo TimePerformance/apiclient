@@ -79,7 +79,10 @@ public class APIClient {
 	 * 
 	 * @param projectName
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> internal/master
 	 * @return project baseline history, current plan and forecast
 	 * @throws Exception
 	 */
@@ -92,6 +95,9 @@ public class APIClient {
 	/**
 	 * 
 	 * @param projectName
+<<<<<<< HEAD
+>>>>>>> internal/master
+=======
 >>>>>>> internal/master
 	 * @return project roadmap
 	 * @throws Exception
@@ -327,6 +333,24 @@ public class APIClient {
 		return doRequest(url.toString());
 	}
 	
+<<<<<<< HEAD
+=======
+	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#projects_assignments">Online Documentation</a>
+	 * 
+	 * @param projectName
+	 * @return
+	 * @throws Exception
+	 */
+	public APIResponse getProjectAssignments(String projectName) throws Exception {
+		String id = getProjectId(projectName);
+		
+		StringBuffer url = new StringBuffer("projects/" + id + "/assignments.json");
+		
+		return doRequest(url.toString());
+	}
+	
+>>>>>>> internal/master
 	public String getUserIdFromLogin(String userLogin) throws Exception {
 		String url = "users/getIdFromLogin.txt?login=" + userLogin;
 		return doRequest(url).content;
