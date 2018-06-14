@@ -80,7 +80,10 @@ public class APIClient {
 	 * @param projectName
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> internal/master
 =======
 >>>>>>> internal/master
 	 * @return project baseline history, current plan and forecast
@@ -96,6 +99,9 @@ public class APIClient {
 	 * 
 	 * @param projectName
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> internal/master
+=======
 >>>>>>> internal/master
 =======
 >>>>>>> internal/master
@@ -123,6 +129,21 @@ public class APIClient {
 	}
 	
 	/**
+<<<<<<< HEAD
+=======
+	 * 
+	 * @param projectName
+	 * @return timeseries for actual cost and actual progress of the project
+	 * @throws Exception
+	 */
+	public APIResponse getProjectActualsTimeseries(String projectName) throws Exception {
+		String id = getProjectId(projectName);
+		String path = "projects/" + id + "/actualsTimeseries.json";
+		return doRequest(path, false);
+	}
+	
+	/**
+>>>>>>> internal/master
 	 * API calls require id. This method provides a way to get the id from the name of the project
 	 * 
 	 * @param projectName
@@ -130,7 +151,12 @@ public class APIClient {
 	 * @throws Exception
 	 */
 	public String getProjectId(String projectName) throws Exception, APIException {
+<<<<<<< HEAD
 		String id = doRequest("projects/getIdFromName.txt?name=" + projectName, false).content;
+=======
+		String id = doRequest("projects/getIdFromName.txt?name=" + URLEncoder.encode(projectName, "utf-8"),
+							  false).content;
+>>>>>>> internal/master
 		if (id.length() == 0) throw new Exception("project not found: " + projectName);
 		LOGGER.log(Level.FINE, projectName + " project id = " + id);
 		return id;
@@ -334,7 +360,10 @@ public class APIClient {
 	}
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> internal/master
 	/**
 	 * <a href="http://pma.timeperformance.com/apidoc#projects_assignments">Online Documentation</a>
 	 * 
@@ -348,6 +377,41 @@ public class APIClient {
 		StringBuffer url = new StringBuffer("projects/" + id + "/assignments.json");
 		
 		return doRequest(url.toString());
+	}
+	
+<<<<<<< HEAD
+>>>>>>> internal/master
+=======
+	/**
+	 * @return list of not archived portfolios that one have access
+	 */
+	public APIResponse getPortfolioList() throws Exception {
+		return doRequest("portfolios.json");
+	}
+	
+	/**
+	 * API calls require id. This method provides a way to get the id from the name of the portfolio
+	 * 
+	 * @param name
+	 * @return portfolio id
+	 * @throws Exception
+	 */
+	public String getPortfolioId(String name) throws Exception, APIException {
+		String id = doRequest("portfolios/getIdFromName.txt?name=" + URLEncoder.encode(name, "utf-8"), false).content;
+		if (id.length() == 0) throw new Exception("portfolio not found: " + name);
+		return id;
+	}
+	
+	/**
+	 * 
+	 * @param portfolioName
+	 * @return portfolio progress monitoring report
+	 * @throws Exception
+	 */
+	public APIResponse getPortfolioProgressReport(String portfolioName) throws Exception {
+		String id = getPortfolioId(portfolioName);
+		StringBuffer path = new StringBuffer("portfolios/" + id + "/progressReport.json");
+		return doRequest(path.toString(), false);
 	}
 	
 >>>>>>> internal/master
