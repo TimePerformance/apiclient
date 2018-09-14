@@ -78,14 +78,6 @@ public class APIClient {
 	/**
 	 * 
 	 * @param projectName
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> internal/master
-=======
->>>>>>> internal/master
 	 * @return project baseline history, current plan and forecast
 	 * @throws Exception
 	 */
@@ -98,13 +90,6 @@ public class APIClient {
 	/**
 	 * 
 	 * @param projectName
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> internal/master
-=======
->>>>>>> internal/master
-=======
->>>>>>> internal/master
 	 * @return project roadmap
 	 * @throws Exception
 	 */
@@ -129,8 +114,6 @@ public class APIClient {
 	}
 	
 	/**
-<<<<<<< HEAD
-=======
 	 * 
 	 * @param projectName
 	 * @return timeseries for actual cost and actual progress of the project
@@ -143,7 +126,6 @@ public class APIClient {
 	}
 	
 	/**
->>>>>>> internal/master
 	 * API calls require id. This method provides a way to get the id from the name of the project
 	 * 
 	 * @param projectName
@@ -151,12 +133,8 @@ public class APIClient {
 	 * @throws Exception
 	 */
 	public String getProjectId(String projectName) throws Exception, APIException {
-<<<<<<< HEAD
-		String id = doRequest("projects/getIdFromName.txt?name=" + projectName, false).content;
-=======
 		String id = doRequest("projects/getIdFromName.txt?name=" + URLEncoder.encode(projectName, "utf-8"),
 							  false).content;
->>>>>>> internal/master
 		if (id.length() == 0) throw new Exception("project not found: " + projectName);
 		LOGGER.log(Level.FINE, projectName + " project id = " + id);
 		return id;
@@ -175,24 +153,23 @@ public class APIClient {
 	}
 	
 	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#projects_expenses">Online Documentation</a>
+	 * 
+	 * @param projectName
+	 * @return project expenses
+	 * @throws Exception
+	 */
+	public APIResponse getProjectExpenses(String projectName) throws Exception {
+		String id = getProjectId(projectName);
+		StringBuffer path = new StringBuffer("projects/" + id + "/expenses.json");
+		return doRequest(path.toString(), false);
+	}
+	
+	/**
 	 * @return list of not archived projects that one have access in JSON
 	 */
 	public APIResponse getProjectList() throws Exception {
 		return doRequest("projects.json");
-	}
-	
-	/**
-	 * <a href="http://pma.timeperformance.com/apidoc#users_assignment">Online Documentation</a>
-	 * 
-	 * @param userLogin
-	 * @param durationInMonths indicates how long in past and in future for the schedule (default 12
-	 *            months
-	 * @return schedule in iCal format
-	 * @throws Exception
-	 */
-	public APIResponse getUserSchedule(String userLogin, int durationInMonths) throws Exception {
-		String id = getUserIdFromLogin(userLogin);
-		return doRequest("users/" + id + "/schedule.ics?month=" + durationInMonths);
 	}
 	
 	/**
@@ -301,6 +278,26 @@ public class APIClient {
 	}
 	
 	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#users_assignments">Online Documentation</a>
+	 * 
+	 * @param userLogin
+	 * @param periodStart
+	 * @param lastDay
+	 * @return
+	 * @throws Exception
+	 */
+	public APIResponse getUserAssignments(String userLogin, String firstDay, String lastDay) throws Exception {
+		String id = getUserIdFromLogin(userLogin);
+		
+		StringBuffer url = new StringBuffer("users/" + id + "/assignments.json");
+		
+		addQueryParam(url, "firstDay", firstDay);
+		addQueryParam(url, "lastDay", lastDay);
+		
+		return doRequest(url.toString());
+	}
+	
+	/**
 	 * Utility: appends a parameter to the URL
 	 * 
 	 * @param url
@@ -359,11 +356,6 @@ public class APIClient {
 		return doRequest(url.toString());
 	}
 	
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> internal/master
 	/**
 	 * <a href="http://pma.timeperformance.com/apidoc#projects_assignments">Online Documentation</a>
 	 * 
@@ -379,9 +371,6 @@ public class APIClient {
 		return doRequest(url.toString());
 	}
 	
-<<<<<<< HEAD
->>>>>>> internal/master
-=======
 	/**
 	 * @return list of not archived portfolios that one have access
 	 */
@@ -414,7 +403,6 @@ public class APIClient {
 		return doRequest(path.toString(), false);
 	}
 	
->>>>>>> internal/master
 	public String getUserIdFromLogin(String userLogin) throws Exception {
 		String url = "users/getIdFromLogin.txt?login=" + userLogin;
 		return doRequest(url).content;
