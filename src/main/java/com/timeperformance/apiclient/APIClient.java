@@ -63,13 +63,31 @@ public class APIClient {
 	/**
 	 * 
 	 * @param projectName
-	 * @return project progress monitoring report
+	 * @return project progress report
 	 * @throws Exception
 	 */
-	public APIResponse getProjectProgressReport(String projectName, boolean withDeliverables, boolean formatNumber)
+	public APIResponse getProjectProgressReport(String projectName, boolean withDeliverables) throws Exception {
+		String id = getProjectId(projectName);
+		StringBuffer path = new StringBuffer("projects/" + id + "/progressReport.json");
+		addQueryParam(path, "legacy", "0");
+		if (withDeliverables) addQueryParam(path, "withDeliverables", "1");
+		return doRequest(path.toString(), false);
+	}
+	
+	/**
+	 * 
+	 * @param projectName
+	 * @return project progress report in deprecated format
+	 * @throws Exception
+	 */
+	@Deprecated
+	public APIResponse getDeprecatedProjectProgressReport(String projectName,
+														  boolean withDeliverables,
+														  boolean formatNumber)
 			throws Exception {
 		String id = getProjectId(projectName);
 		StringBuffer path = new StringBuffer("projects/" + id + "/progressReport.json");
+		addQueryParam(path, "legacy", "1");
 		if (formatNumber) addQueryParam(path, "formatting", "1");
 		if (withDeliverables) addQueryParam(path, "withDeliverables", "1");
 		return doRequest(path.toString(), false);
@@ -394,12 +412,27 @@ public class APIClient {
 	/**
 	 * 
 	 * @param portfolioName
-	 * @return portfolio progress monitoring report
+	 * @return portfolio progress report
 	 * @throws Exception
 	 */
 	public APIResponse getPortfolioProgressReport(String portfolioName) throws Exception {
 		String id = getPortfolioId(portfolioName);
 		StringBuffer path = new StringBuffer("portfolios/" + id + "/progressReport.json");
+		addQueryParam(path, "legacy", "0");
+		return doRequest(path.toString(), false);
+	}
+	
+	/**
+	 * 
+	 * @param portfolioName
+	 * @return deprecated portfolio progress report
+	 * @throws Exception
+	 */
+	@Deprecated
+	public APIResponse getDeprecatedPortfolioProgressReport(String portfolioName) throws Exception {
+		String id = getPortfolioId(portfolioName);
+		StringBuffer path = new StringBuffer("portfolios/" + id + "/progressReport.json");
+		addQueryParam(path, "legacy", "1");
 		return doRequest(path.toString(), false);
 	}
 	
