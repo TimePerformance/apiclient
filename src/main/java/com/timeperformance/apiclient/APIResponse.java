@@ -58,22 +58,14 @@ public class APIResponse {
 		APIResponse apiResponse = new APIResponse(connection.getResponseCode());
 		
 		InputStream in = apiResponse.isError() ? connection.getErrorStream() : connection.getInputStream();
-<<<<<<< HEAD
-		apiResponse.content = getContent(connection, in);
-=======
 		apiResponse.content = getContent(in);
->>>>>>> internal/master
 		
 		return apiResponse;
 	}
 	
-<<<<<<< HEAD
-	static String getContent(HttpsURLConnection connection, InputStream responseStream) throws IOException {
-=======
 	static String getContent(InputStream responseStream) throws IOException {
 		if (responseStream == null) return "";
 		
->>>>>>> internal/master
 		try (BufferedInputStream in = new BufferedInputStream(responseStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream();) {
 			for (int b; (b = in.read()) != -1;) {
