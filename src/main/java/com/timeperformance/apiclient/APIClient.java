@@ -16,7 +16,7 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class APIClient {
 	
-	private static final String API_URL = "/api/v2/";
+	private static final String API_URL = "/api/v3/";
 	
 	private static final Logger LOGGER = Logger.getGlobal();
 	
@@ -157,8 +157,7 @@ public class APIClient {
 	}
 	
 	/**
-	 * <a href="http://pma.timeperformance.com/apidoc#projects_deliverables">Online
-	 * Documentation</a>
+	 * <a href="http://pma.timeperformance.com/apidoc#projects_deliverables">Online Documentation</a>
 	 * 
 	 * @param projectName
 	 * @return project deliverable hierarchy
@@ -178,6 +177,13 @@ public class APIClient {
 	}
 	
 	/**
+	 * @return list of not archived project templates that one have access in JSON
+	 */
+	public APIResponse getProjectTemplateList() throws Exception {
+		return doRequest("projects/templates.json");
+	}
+	
+	/**
 	 * 
 	 * @param userId
 	 * @param firstDay (format yyyy-MM-dd)
@@ -187,12 +193,7 @@ public class APIClient {
 	 * @return user's time report
 	 * @throws Exception
 	 */
-	public APIResponse getUserTimeReport(Long userId,
-										 String firstDay,
-										 String lastDay,
-										 Double hoursPerDay,
-										 Double halfDayThreshold)
-			throws Exception {
+	public APIResponse getUserTimeReport(Long userId, String firstDay, String lastDay, Double hoursPerDay, Double halfDayThreshold) throws Exception {
 		String url = "users/" + userId + "/timeReport.json";
 		
 		url = addTimeReportParameters(url, firstDay, lastDay, hoursPerDay, halfDayThreshold);
@@ -211,12 +212,7 @@ public class APIClient {
 	 * @return user's detailed timesheet
 	 * @throws Exception
 	 */
-	public APIResponse getUserTimesheet(Long userId,
-										String firstDay,
-										String lastDay,
-										Double hoursPerDay,
-										Double halfDayThreshold)
-			throws Exception {
+	public APIResponse getUserTimesheet(Long userId, String firstDay, String lastDay, Double hoursPerDay, Double halfDayThreshold) throws Exception {
 		String url = "users/" + userId + "/timesheet.json";
 		
 		url = addTimeReportParameters(url, firstDay, lastDay, hoursPerDay, halfDayThreshold);
@@ -224,11 +220,7 @@ public class APIClient {
 		return doRequest(url);
 	}
 	
-	public static String addTimeReportParameters(String baseURL,
-												 String firstDay,
-												 String lastDay,
-												 Double hoursPerDay,
-												 Double halfDayThreshold) {
+	public static String addTimeReportParameters(String baseURL, String firstDay, String lastDay, Double hoursPerDay, Double halfDayThreshold) {
 		StringBuffer url = new StringBuffer(baseURL);
 		
 		addQueryParam(url, "firstDay", firstDay);
@@ -266,8 +258,7 @@ public class APIClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public APIResponse getUserTasks(Long userId, String periodStart, String periodEnd, boolean notClosed)
-			throws Exception {
+	public APIResponse getUserTasks(Long userId, String periodStart, String periodEnd, boolean notClosed) throws Exception {
 		
 		StringBuffer url = new StringBuffer("users/" + userId + "/todolist.json");
 		
@@ -328,8 +319,7 @@ public class APIClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public APIResponse getProjectTasks(String projectName, String periodStart, String periodEnd, boolean notClosed)
-			throws Exception {
+	public APIResponse getProjectTasks(String projectName, String periodStart, String periodEnd, boolean notClosed) throws Exception {
 		String id = getProjectId(projectName);
 		
 		StringBuffer url = new StringBuffer("projects/" + id + "/tasks.json");
@@ -352,6 +342,21 @@ public class APIClient {
 		String id = getProjectId(projectName);
 		
 		StringBuffer url = new StringBuffer("projects/" + id + "/team.json");
+		
+		return doRequest(url.toString());
+	}
+	
+	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#projects_config">Online Documentation</a>
+	 * 
+	 * @param projectName
+	 * @return
+	 * @throws Exception
+	 */
+	public APIResponse getProjectConfig(String projectName) throws Exception {
+		String id = getProjectId(projectName);
+		
+		StringBuffer url = new StringBuffer("projects/" + id + "/config.json");
 		
 		return doRequest(url.toString());
 	}
@@ -392,6 +397,7 @@ public class APIClient {
 	}
 	
 	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#portfolios_progress_report">Online Documentation</a>
 	 * 
 	 * @param portfolioName
 	 * @return portfolio progress report
@@ -404,8 +410,40 @@ public class APIClient {
 		return doRequest(path.toString());
 	}
 	
+	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#users_list">Online Documentation</a>
+	 * 
+	 * @throws Exception
+	 */
 	public APIResponse getUserList() throws Exception {
 		return doRequest("users.json");
+	}
+	
+	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#globals_profiles_list">Online Documentation</a>
+	 * 
+	 * @throws Exception
+	 */
+	public APIResponse getProfileList() throws Exception {
+		return doRequest("profiles.json");
+	}
+	
+	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#globals_npactivities_list">Online Documentation</a>
+	 * 
+	 * @throws Exception
+	 */
+	public APIResponse getNonProjectActivityList() throws Exception {
+		return doRequest("npactivities.json");
+	}
+	
+	/**
+	 * <a href="http://pma.timeperformance.com/apidoc#globals_obs">Online Documentation</a>
+	 * 
+	 * @return the organizational brakdown structure (a tree of OBS entities a.k.a. departments)
+	 */
+	public APIResponse getOBS() throws Exception {
+		return doRequest("obs.json");
 	}
 	
 	public DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -438,8 +476,7 @@ public class APIClient {
 		connection.setDefaultUseCaches(false);
 		connection.setRequestProperty("Accept", "application/json");
 		
-		connection.setRequestProperty("Authorization",
-									  "Basic " + Utils.buildEncodedAuthenticationString(apiUser, apiSecretKey));
+		connection.setRequestProperty("Authorization", "Basic " + Utils.buildEncodedAuthenticationString(apiUser, apiSecretKey));
 		
 		APIResponse response = APIResponse.parse(connection);
 		response.throwExceptionIfError();
